@@ -1,5 +1,5 @@
 {
-  "name": "state",
+  "name": "state.js",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -14,6 +14,7 @@
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-0": "^6.24.1",
     "clean-webpack-plugin": "^0.1.17",
     "eslint": "^4.11.0",
     "eslint-config-airbnb-base": "^12.1.0",
