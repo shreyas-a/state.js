@@ -1,3 +1,7 @@
 {
-    "extends": ["airbnb-base", "prettier"]
+  "extends": ["airbnb-base", "prettier"],
+  "rules": {
+    "func-names": "off",
+    "no-underscore-dangle": "off"
+  }
 }

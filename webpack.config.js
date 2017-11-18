@@ -6,7 +6,7 @@ const Clean = require('clean-webpack-plugin');
 
 module.exports = {
   entry: './index.js',
-  // devtool: 'eval-source-map', // use cheap-source-map for prod
+  devtool: 'source-map', // use cheap-source-map for prod
   output: {
     filename: 'state.js',
     path: path.resolve(__dirname, './dist'),
@@ -36,7 +36,7 @@ module.exports = {
         warnings: false,
         screw_ie8: true,
       },
-      // sourceMap: true,
+      sourceMap: true,
     }),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
