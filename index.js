@@ -1,47 +1,57 @@
-const setNotifier = (node, key) => {
-  let val = node[key];
-
-  Object.defineProperty(node, key, {
-    get() {
-      return val;
-    },
-    set(newVal) {
-      console.log(`Changed ${key}: ${val} -> ${newVal}`);
-      val = newVal;
-      // notify(_key);
-    },
-  });
-};
-
 class State {
   constructor(observable) {
     this.observable = observable;
+    this.observers = {};
+  }
+
+  _makeReactiveProperty(obj, key) {
+    let value = obj[key];
+    Object.defineProperty(obj, key, {
+      get: () => value,
+      set: newValue => {
+        const oldValue = value;
+        value = newValue;
+        if (this.observers[key]) {
+          this.observers[key].forEach(observer => {
+            observer.call(this, oldValue, newValue);
+          });
+        }
+      },
+    });
+  }
+
+  _makeReactiveObject(obj) {
+    Object.keys(obj).forEach(key => {
+      this._makeReactiveProperty(obj, key);
+      if (typeof obj[key] === 'object') {
+        this._makeReactiveObject(obj[key]);
+      }
+    });
   }
 
   static create(node) {
     const clone = { ...node };
-    Object.keys(clone).forEach(_key => {
-      setNotifier(clone, _key);
-    });
-
-    return new State(clone);
+    const stateInstance = new State(clone);
+    stateInstance._makeReactiveObject(clone);
+    return stateInstance;
   }
 
   getState() {
     return JSON.parse(JSON.stringify(this.observable, null));
   }
 
-  create(locationNode, onlyNode) {
+  create(locationNode, optionalNode) {
     if (typeof locationNode === 'string') {
       const attributes = locationNode.split('.');
       if (attributes.length === 1) {
-        this.observable[attributes[0]] = onlyNode;
+        this.observable[attributes[0]] = optionalNode;
       } else if (attributes.length > 1) {
         let parent = this.observable;
         attributes.forEach((attr, index, arr) => {
           if (!parent[attr]) {
             if (index === arr.length - 1) {
-              parent[attr] = onlyNode;
+              parent[attr] = optionalNode;
+              this._makeReactiveProperty(parent, attr);
             } else {
               parent[attr] = {};
             }
@@ -57,7 +67,7 @@ class State {
     return this.getState();
   }
 
-  prop(locationNode, onlyNode) {
+  prop(locationNode, optionalNode) {
     let finalNode;
     let parent = this.observable;
     const attributes = locationNode.split('.');
@@ -67,22 +77,29 @@ class State {
         if (parent[attr]) {
           parent = parent[attr];
         } else {
+          // breaking if an attribute is not found
           return true;
         }
-      } else if (!onlyNode) {
+      } else if (!optionalNode) {
         finalNode = parent[attr];
       } else {
-        parent[attr] = onlyNode;
-        finalNode = onlyNode;
+        parent[attr] = optionalNode;
+        finalNode = optionalNode;
       }
-
+      // continue the loop
       return false;
     });
 
     return finalNode;
   }
 
-  on(property, callback) {}
+  on(property, callback) {
+    if (!this.observers[property]) {
+      this.observers[property] = [callback];
+    } else {
+      this.observers[property].push(callback);
+    }
+  }
 }
 
 module.exports = State;
