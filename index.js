@@ -1,6 +1,7 @@
 class State {
   constructor(observable) {
     this.observable = observable;
+    this.currentChange = '';
     this.observers = {};
   }
 
@@ -11,8 +12,8 @@ class State {
       set: newValue => {
         const oldValue = value;
         value = newValue;
-        if (this.observers[key]) {
-          this.observers[key].forEach(observer => {
+        if (this.currentChange && this.observers[this.currentChange]) {
+          this.observers[this.currentChange].forEach(observer => {
             observer.call(this, oldValue, newValue);
           });
         }
@@ -51,7 +52,11 @@ class State {
           if (!parent[attr]) {
             if (index === arr.length - 1) {
               parent[attr] = optionalNode;
-              this._makeReactiveProperty(parent, attr);
+              if (typeof optionalNode === 'object') {
+                this._makeReactiveObject(optionalNode);
+              } else {
+                this._makeReactiveProperty(parent, attr);
+              }
             } else {
               parent[attr] = {};
             }
@@ -83,6 +88,7 @@ class State {
       } else if (!optionalNode) {
         finalNode = parent[attr];
       } else {
+        this.currentChange = locationNode;
         parent[attr] = optionalNode;
         finalNode = optionalNode;
       }
@@ -94,11 +100,20 @@ class State {
   }
 
   on(property, callback) {
+    let index;
     if (!this.observers[property]) {
+      index = 0;
       this.observers[property] = [callback];
     } else {
+      index = this.observers[property].length;
       this.observers[property].push(callback);
     }
+
+    return () => {
+      if (this.observers[property] && this.observers[property].length) {
+        this.observers[property].splice(index, 1);
+      }
+    };
   }
 }
 
