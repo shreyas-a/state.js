@@ -69,7 +69,7 @@ class State {
     } else if (typeof locationNode === 'object') {
       this.observable = { ...this.observable, ...locationNode };
     }
-    return this.getState();
+    return this;
   }
 
   prop(locationNode, optionalNode) {
@@ -111,10 +111,20 @@ class State {
 
     return () => {
       if (this.observers[property] && this.observers[property].length) {
-        this.observers[property].splice(index, 1);
+        if (this.observers[property].length === 1) {
+          delete this.observers[property];
+        } else {
+          this.observers[property].splice(index, 1);
+        }
       }
     };
   }
+
+  /* eslint-disable class-methods-use-this */
+  next() {}
+  lock() {}
+  unlock() {}
+  /* eslint-enable class-methods-use-this */
 }
 
 module.exports = State;

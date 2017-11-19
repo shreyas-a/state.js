@@ -3,5 +3,11 @@
   "rules": {
     "func-names": "off",
     "no-underscore-dangle": "off"
+  },
+  "globals": {
+    "before": true,
+    "describe": true,
+    "expect": true,
+    "it": true
   }
 }

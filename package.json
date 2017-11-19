@@ -4,24 +4,26 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack"
+    "test": "mocha",
+    "build": "webpack",
+    "start": "webpack -w"
   },
   "keywords": [],
-  "author": "",
+  "author": "Shreyas Agarkar <shreyas.a24@gmail.com>",
   "license": "ISC",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-0": "^6.24.1",
+    "chai": "^4.1.2",
     "clean-webpack-plugin": "^0.1.17",
     "eslint": "^4.11.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-config-prettier": "^2.7.0",
-    "eslint-plugin-import": "^2.8.0"
-  },
-  "dependencies": {
+    "eslint-plugin-import": "^2.8.0",
+    "mocha": "^4.0.1",
     "webpack": "^3.8.1"
-  }
+  },
+  "dependencies": {}
 }

@@ -6,7 +6,7 @@ const Clean = require('clean-webpack-plugin');
 
 module.exports = {
   entry: './index.js',
-  devtool: 'source-map', // use cheap-source-map for prod
+  devtool: 'cheap-source-map',
   output: {
     filename: 'state.js',
     path: path.resolve(__dirname, './dist'),
